@@ -20,12 +20,15 @@ const validateTodo = (data, isUpdate = false) => {
     return errors;
 };
 
-// Get all todos with pagination
+// Get all todos with pagination, filtering, search, and sorting
 export const getTodos = (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const status = req.query.status; // Optional status filter
+        const search = req.query.search; // Optional search query
+        const sortBy = req.query.sortBy || 'createdAt'; // Sort field
+        const sortOrder = req.query.sortOrder || 'desc'; // Sort order (asc/desc)
 
         if (page < 1 || limit < 1) {
             return res.status(400).json({
@@ -33,7 +36,7 @@ export const getTodos = (req, res) => {
             });
         }
 
-        const result = todoStore.findAll(page, limit, status);
+        const result = todoStore.findAll(page, limit, status, search, sortBy, sortOrder);
         res.json(result);
     } catch (error) {
         console.error('Error getting todos:', error);

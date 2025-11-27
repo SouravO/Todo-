@@ -7,8 +7,8 @@ class TodoStore {
         this.currentId = 1;
     }
 
-    // Get all todos with pagination
-    findAll(page = 1, limit = 10, statusFilter = null) {
+    // Get all todos with pagination, filtering, search, and sorting
+    findAll(page = 1, limit = 10, statusFilter = null, searchQuery = null, sortBy = 'createdAt', sortOrder = 'desc') {
         // Filter by status if provided
         let filteredTodos = this.todos;
         if (statusFilter) {
@@ -24,14 +24,48 @@ class TodoStore {
             }
         }
 
+        // Search by title or description
+        if (searchQuery && searchQuery.trim() !== '') {
+            const query = searchQuery.toLowerCase();
+            filteredTodos = filteredTodos.filter(todo => 
+                todo.title.toLowerCase().includes(query) ||
+                (todo.description && todo.description.toLowerCase().includes(query))
+            );
+        }
+
+        // Sort todos
+        const sortedTodos = [...filteredTodos].sort((a, b) => {
+            let aValue, bValue;
+
+            switch (sortBy) {
+                case 'title':
+                    aValue = a.title.toLowerCase();
+                    bValue = b.title.toLowerCase();
+                    break;
+                case 'status':
+                    // Custom sort order: Pending -> In-Progress -> Completed
+                    const statusOrder = { 'Pending': 1, 'In-Progress': 2, 'Completed': 3 };
+                    aValue = statusOrder[a.status];
+                    bValue = statusOrder[b.status];
+                    break;
+                case 'updatedAt':
+                    aValue = new Date(a.updatedAt);
+                    bValue = new Date(b.updatedAt);
+                    break;
+                case 'createdAt':
+                default:
+                    aValue = new Date(a.createdAt);
+                    bValue = new Date(b.createdAt);
+                    break;
+            }
+
+            if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
+            if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+            return 0;
+        });
+
         const startIndex = (page - 1) * limit;
         const endIndex = startIndex + limit;
-
-        // Sort by createdAt descending (newest first)
-        const sortedTodos = [...filteredTodos].sort((a, b) =>
-            new Date(b.createdAt) - new Date(a.createdAt)
-        );
-
         const items = sortedTodos.slice(startIndex, endIndex);
         const total = filteredTodos.length;
         const totalPages = Math.ceil(total / limit);

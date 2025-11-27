@@ -9,10 +9,13 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTodo, setEditingTodo] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState('desc');
 
   // Separate hooks for active and completed todos
-  const activeTodos = useTodos('active');
-  const completedTodos = useTodos('completed');
+  const activeTodos = useTodos('active', searchQuery, sortBy, sortOrder);
+  const completedTodos = useTodos('completed', searchQuery, sortBy, sortOrder);
 
   // Use the appropriate hook based on active tab
   const currentTodos = activeTab === 'active' ? activeTodos : completedTodos;
@@ -119,15 +122,73 @@ function App() {
           </div>
         )}
 
-        {/* Create Button */}
-        <div className="mb-6">
-          <button
-            onClick={handleCreateClick}
-            disabled={loading}
-            className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            + Create New Todo
-          </button>
+        {/* Toolbar: Create Button, Search, Sort, Filter */}
+        <div className="mb-6 space-y-4">
+          <div className="flex flex-wrap gap-4 items-center">
+            <button
+              onClick={handleCreateClick}
+              disabled={loading}
+              className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              + Create New Todo
+            </button>
+
+            {/* Search Bar */}
+            <div className="flex-1 min-w-[200px]">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search todos..."
+                  className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <svg
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            {/* Sort Options */}
+            <div className="flex gap-2">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="createdAt">Created Date</option>
+                <option value="updatedAt">Updated Date</option>
+                <option value="title">Title</option>
+                <option value="status">Status</option>
+              </select>
+
+              <button
+                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+              >
+                {sortOrder === 'asc' ? (
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                  </svg>
+                ) : (
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Tabs */}

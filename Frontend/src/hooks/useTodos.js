@@ -4,8 +4,11 @@ import * as todoApi from '../api/todos';
 /**
  * Custom hook to manage todos state, fetching, pagination, and CRUD operations
  * @param {string} filter - 'active' for pending/in-progress, 'completed' for completed todos
+ * @param {string} searchQuery - Search query for filtering todos
+ * @param {string} sortBy - Field to sort by
+ * @param {string} sortOrder - Sort order (asc/desc)
  */
-export const useTodos = (filter = 'active') => {
+export const useTodos = (filter = 'active', searchQuery = '', sortBy = 'createdAt', sortOrder = 'desc') => {
     const [todos, setTodos] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -23,7 +26,10 @@ export const useTodos = (filter = 'active') => {
             const data = await todoApi.getTodos({ 
                 page: pageNum, 
                 limit,
-                status: filter // Pass filter to backend
+                status: filter, // Pass filter to backend
+                search: searchQuery,
+                sortBy,
+                sortOrder
             });
             
             setTodos(data.items);
@@ -36,7 +42,7 @@ export const useTodos = (filter = 'active') => {
         } finally {
             setLoading(false);
         }
-    }, [page, filter, limit]);
+    }, [page, filter, limit, searchQuery, sortBy, sortOrder]);
 
     // Initial fetch
     useEffect(() => {

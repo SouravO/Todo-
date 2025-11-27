@@ -19,11 +19,14 @@ const handleResponse = async (response) => {
     return response.json();
 };
 
-// Get all todos with pagination
-export const getTodos = async ({ page = 1, limit = 10, status = null } = {}) => {
-    let url = `${API_BASE_URL}/todos?page=${page}&limit=${limit}`;
+// Get all todos with pagination, filtering, search, and sorting
+export const getTodos = async ({ page = 1, limit = 10, status = null, search = null, sortBy = 'createdAt', sortOrder = 'desc' } = {}) => {
+    let url = `${API_BASE_URL}/todos?page=${page}&limit=${limit}&sortBy=${sortBy}&sortOrder=${sortOrder}`;
     if (status) {
         url += `&status=${status}`;
+    }
+    if (search) {
+        url += `&search=${encodeURIComponent(search)}`;
     }
     const response = await fetch(url);
     return handleResponse(response);
