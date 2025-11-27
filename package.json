@@ -1,0 +1,17 @@
+{
+  "name": "todo-app",
+  "version": "1.0.0",
+  "description": "Full-stack Todo Application with React and Express",
+  "scripts": {
+    "install:backend": "cd Backend && npm install",
+    "install:frontend": "cd Frontend && npm install",
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "server": "cd Backend && npm start",
+    "client": "cd Frontend && npm run dev",
+    "dev:backend": "cd Backend && npm run dev",
+    "dev": "echo Starting both servers... && start /B npm run server && npm run client"
+  },
+  "keywords": ["todo", "react", "express", "vite", "tailwind"],
+  "author": "",
+  "license": "ISC"
+}
