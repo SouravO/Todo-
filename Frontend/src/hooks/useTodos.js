@@ -44,10 +44,10 @@ export const useTodos = (filter = 'active', searchQuery = '', sortBy = 'createdA
         }
     }, [page, filter, limit, searchQuery, sortBy, sortOrder]);
 
-    // Initial fetch
+    // Fetch todos when search, sort, or filter changes
     useEffect(() => {
         fetchTodos(1);
-    }, []);
+    }, [filter, searchQuery, sortBy, sortOrder]);
 
     // Create new todo
     const createTodo = async (todoData) => {
